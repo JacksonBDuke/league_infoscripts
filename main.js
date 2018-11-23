@@ -11,8 +11,8 @@ doAll();
 
 function justAkali() {
     let akali = new champion.ChampNameExtension();
-    akali.name = 'Syndra';
-    akali.extension = '/wiki/Syndra';
+    akali.name = 'Akali';
+    akali.extension = '/wiki/Akali';
 
     getAbilitiesVerbosity(akali, function(newAkali) {
         let verbosity = 0;
@@ -37,7 +37,7 @@ function getAllChampions(champions, cb) {
         getAbilitiesVerbosity(champ, function(newChamp) {
             champ = newChamp
             ++count;
-            if(count >= champions.length) cb(champions);
+            if(count > champions.length) cb(champions);
         });
     });
 }
@@ -54,10 +54,8 @@ function printChampions(champions) {
 
 function getAbilitiesVerbosity(champ, cb) {
     let options = factory.getOptions(rootUrl + champ.extension + '/Abilities?action=render');
-    // console.log(options.url);
     request(options, function(err, resp, body) {
         if(err) console.error(`error_${champ}: ${err}`);
-        // console.log('statusCode: ', resp && resp.statusCode);
         let abilities = [];
         let verbosity = 0;
         if(resp && resp.statusCode === 200) {
@@ -72,7 +70,6 @@ function getAbilitiesVerbosity(champ, cb) {
         }
         champ.abilities = abilities;
         champ.verbosity = verbosity;
-        // console.log(`${champ.name}:\t${champ.verbosity}`);
         cb(champ);
     });
 }
@@ -89,7 +86,6 @@ function parseAbilitiesFromHtml(html, cb) {
         });
         return abilities.push(ability.replace(/ *\<[^\>]*\> */g, ""));
     });
-    // console.log(abilities);
     cb(abilities);
 }
 
@@ -98,7 +94,7 @@ function getBaseChampObjects(cb) {
     let options = factory.getOptions(rootUrl+landingPageSuffix);
     request(options, function(err, resp, body) {
         if(err) console.error('error: ', err);
-        // console.log('statusCode: ', resp && resp.statusCode);
+        console.log('statusCode: ', resp && resp.statusCode);
         const champions = [];
         let $ = cheerio.load(body);
         $('ol.champion_roster').children().each(function(i, element) {
@@ -107,7 +103,6 @@ function getBaseChampObjects(cb) {
             champ.name = $(this).find('span').attr('data-champion');
             champions[i] = champ;
         });
-
         cb(champions);
     });
 }
